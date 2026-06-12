@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpenseTracker - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{
+            --bg:#0a0a0a;--glass:rgba(255,255,255,.035);--glass-border:rgba(255,255,255,.07);
+            --text:#f5f5f5;--text-sec:#9ca3af;--text-muted:#6b7280;
+            --accent:#10b981;--accent-dark:#059669;--danger:#ef4444;
+            --input-bg:rgba(255,255,255,.05);--input-border:rgba(255,255,255,.1);
+            --input-focus:rgba(16,185,129,.3);
+        }
+        body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+        .blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.3;pointer-events:none;will-change:transform}
+        .blob-1{width:400px;height:400px;background:#10b981;top:-120px;left:-100px;animation:bf1 18s ease-in-out infinite}
+        .blob-2{width:350px;height:350px;background:#06b6d4;bottom:-100px;right:-80px;animation:bf2 22s ease-in-out infinite}
+        .blob-3{width:220px;height:220px;background:#f59e0b;top:55%;left:62%;animation:bf3 15s ease-in-out infinite}
+        @keyframes bf1{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(80px,60px) scale(1.1)}50%{transform:translate(40px,130px) scale(.95)}75%{transform:translate(-30px,80px) scale(1.05)}}
+        @keyframes bf2{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(-70px,-50px) scale(1.15)}50%{transform:translate(-110px,-90px) scale(.9)}75%{transform:translate(-50px,-130px) scale(1.1)}}
+        @keyframes bf3{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(-90px,40px) scale(1.2)}66%{transform:translate(50px,-70px) scale(.85)}}
+        .login-card{background:var(--glass);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid var(--glass-border);border-radius:20px;width:100%;max-width:430px;margin:1rem;position:relative;z-index:10;overflow:hidden;animation:cardIn .8s cubic-bezier(.16,1,.3,1) both}
+        @keyframes cardIn{from{opacity:0;transform:translateY(32px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+        .card-inner{padding:2.5rem 2rem 2rem}
+        .logo-icon{width:56px;height:56px;background:linear-gradient(135deg,var(--accent),#06b6d4);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:1.5rem;color:#fff;box-shadow:0 8px 32px rgba(16,185,129,.25)}
+        .login-card h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.75rem;text-align:center;margin-bottom:.25rem}
+        .subtitle{color:var(--text-sec);text-align:center;font-size:.875rem;margin-bottom:2rem}
+        .form-panel{display:none;opacity:0;transform:translateY(12px)}
+        .form-panel.active{display:block;animation:panelIn .45s cubic-bezier(.16,1,.3,1) forwards}
+        .form-panel.exiting{display:block;animation:panelOut .25s ease forwards}
+        @keyframes panelIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes panelOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-10px)}}
+        .fi{margin-bottom:1.15rem}
+        .fi label{display:block;font-size:.72rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:.35rem}
+        .fi .input-group{background:var(--input-bg);border:1px solid var(--input-border);border-radius:12px;overflow:hidden;transition:all .3s}
+        .fi .input-group:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--input-focus)}
+        .fi .input-group-text{background:transparent;border:none;color:var(--text-muted);padding:.8rem .75rem .8rem 1rem;font-size:1rem}
+        .fi .form-control{background:transparent;border:none;color:var(--text);padding:.8rem 1rem .8rem 0;font-size:.95rem;height:auto}
+        .fi .form-control::placeholder{color:var(--text-muted)}
+        .fi .form-control:focus{box-shadow:none;background:transparent}
+        .toggle-pw{background:transparent;border:none;color:var(--text-muted);cursor:pointer;padding:.8rem 1rem .8rem 0;transition:color .2s}
+        .toggle-pw:hover{color:var(--text)}
+        .pw-strength{display:flex;gap:4px;margin-top:.4rem}
+        .pw-bar{flex:1;height:3px;border-radius:99px;background:rgba(255,255,255,.08);transition:background .3s}
+        .pw-bar.weak{background:#ef4444}.pw-bar.medium{background:#f59e0b}.pw-bar.strong{background:#10b981}
+        .pw-hint{font-size:.72rem;margin-top:.25rem;color:var(--text-muted);min-height:1em;transition:color .3s}
+        .pw-hint.weak{color:#ef4444}.pw-hint.medium{color:#f59e0b}.pw-hint.strong{color:#10b981}
+        .btn-accent{background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#fff;border:none;border-radius:12px;padding:.8rem;font-weight:600;font-size:.95rem;width:100%;position:relative;overflow:hidden;transition:all .3s;cursor:pointer}
+        .btn-accent:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px rgba(16,185,129,.3);color:#fff}
+        .btn-accent:active:not(:disabled){transform:translateY(0)}
+        .btn-accent:disabled{opacity:.6;cursor:not-allowed;transform:none}
+        .switch-link{text-align:center;margin-top:1.5rem;font-size:.875rem;color:var(--text-sec)}
+        .switch-link a{color:var(--accent);font-weight:600;text-decoration:none;cursor:pointer;transition:color .2s}
+        .switch-link a:hover{color:#34d399;text-decoration:underline}
+        .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.18);transform:scale(0);animation:rip .6s linear;pointer-events:none}
+        @keyframes rip{to{transform:scale(4);opacity:0}}
+        .spin-sm{width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite;display:inline-block;vertical-align:middle}
+        @keyframes sp{to{transform:rotate(360deg)}}
+        .toast-box{position:fixed;top:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem}
+        .ct{background:rgba(18,18,18,.95);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:12px;padding:.85rem 1.25rem;display:flex;align-items:center;gap:.75rem;min-width:260px;max-width:360px;animation:tIn .4s cubic-bezier(.16,1,.3,1);box-shadow:0 8px 32px rgba(0,0,0,.5)}
+        .ct.out{animation:tOut .3s ease forwards}
+        .ct.ok{border-left:3px solid var(--accent)}.ct.err{border-left:3px solid var(--danger)}
+        .ct .ti{font-size:1.15rem;flex-shrink:0}.ct.ok .ti{color:var(--accent)}.ct.err .ti{color:var(--danger)}
+        .ct .tm{font-size:.875rem;color:var(--text);flex:1}
+        @keyframes tIn{from{opacity:0;transform:translateX(40px) scale(.95)}to{opacity:1;transform:translateX(0) scale(1)}}
+        @keyframes tOut{to{opacity:0;transform:translateX(40px) scale(.95)}}
+        .success-overlay{position:absolute;inset:0;background:rgba(10,10,10,.92);backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:20;opacity:0;pointer-events:none;transition:opacity .4s}
+        .success-overlay.show{opacity:1;pointer-events:auto}
+        .check-circle{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#06b6d4);display:flex;align-items:center;justify-content:center;font-size:2rem;color:#fff;margin-bottom:1rem;animation:popIn .5s cubic-bezier(.16,1,.3,1) both;box-shadow:0 8px 32px rgba(16,185,129,.35)}
+        @keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+        .success-overlay h2{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:.3rem}
+        .success-overlay p{color:var(--text-sec);font-size:.9rem}
+        .ftxt{text-align:center;color:var(--text-muted);font-size:.75rem;margin-top:1.25rem}
+        @media(prefers-reduced-motion:reduce){.blob,.login-card,.ripple,.form-panel,.check-circle{animation:none!important}.form-panel.active{opacity:1;transform:none}}
+        @media(max-width:480px){.card-inner{padding:2rem 1.5rem 1.5rem}.login-card{border-radius:16px}.login-card h1{font-size:1.5rem}.blob-1{width:250px;height:250px}.blob-2{width:200px;height:200px}.blob-3{width:140px;height:140px}}
+    </style>
+</head>
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="login-card">
+        <div class="success-overlay" id="successOverlay">
+            <div class="check-circle"><i class="bi bi-check-lg"></i></div>
+            <h2 id="successTitle">Success</h2>
+            <p id="successMsg">Redirecting...</p>
+        </div>
+        <div class="card-inner">
+            <div class="logo-icon"><i class="bi bi-wallet2"></i></div>
+            <h1 id="cardTitle">ExpenseTracker</h1>
+            <p class="subtitle" id="cardSubtitle">Sign in to manage your finances</p>
+
+            <!-- Login Panel -->
+            <div class="form-panel active" id="loginPanel">
+                <form id="loginForm" novalidate>
+                    <div class="fi">
+                        <label>Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="lEmail" placeholder="you@example.com" autocomplete="email" required>
+                        </div>
+                    </div>
+                    <div class="fi">
+                        <label>Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control" id="lPw" placeholder="Enter your password" autocomplete="current-password" required>
+                            <button type="button" class="toggle-pw" data-target="lPw" aria-label="Toggle password"><i class="bi bi-eye"></i></button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-accent" id="loginBtn">Sign In</button>
+                </form>
+                <div class="switch-link">Don't have an account? <a id="showReg">Create one</a></div>
+            </div>
+
+            <!-- Register Panel -->
+            <div class="form-panel" id="regPanel">
+                <form id="regForm" novalidate>
+                    <div class="fi">
+                        <label>Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="rEmail" placeholder="you@example.com" autocomplete="email" required>
+                        </div>
+                    </div>
+                    <div class="fi">
+                        <label>Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control" id="rPw" placeholder="Create a password" autocomplete="new-password" required>
+                            <button type="button" class="toggle-pw" data-target="rPw" aria-label="Toggle password"><i class="bi bi-eye"></i></button>
+                        </div>
+                        <div class="pw-strength"><div class="pw-bar" id="pb1"></div><div class="pw-bar" id="pb2"></div><div class="pw-bar" id="pb3"></div><div class="pw-bar" id="pb4"></div></div>
+                        <div class="pw-hint" id="pwHint"></div>
+                    </div>
+                    <div class="fi">
+                        <label>Confirm Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                            <input type="password" class="form-control" id="rPwC" placeholder="Re-enter your password" autocomplete="new-password" required>
+                            <button type="button" class="toggle-pw" data-target="rPwC" aria-label="Toggle password"><i class="bi bi-eye"></i></button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-accent" id="regBtn"><i class="bi bi-person-check me-1"></i>Create Account</button>
+                </form>
+                <div class="switch-link">Already have an account? <a id="showLogin">Sign in</a></div>
+            </div>
+            <p class="ftxt">Secure session stored locally on your device</p>
+        </div>
+    </div>
+
+    <div class="toast-box" id="toasts"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVu7W4tEkwGuMhM1lKiEbjYfw7Rq_zy_Q",
+            authDomain: "test-fa659.firebaseapp.com",
+            databaseURL: "https://test-fa659-default-rtdb.firebaseio.com",
+            projectId: "test-fa659",
+            storageBucket: "test-fa659.firebasestorage.app",
+            messagingSenderId: "103818273336",
+            appId: "1:103818273336:web:1099a38cc5df20e2787ccd",
+            measurementId: "G-HLM41QRE2V"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // 已登录则跳转
+        if (localStorage.getItem('userEmail')) window.location.href = 'expense.html';
+        
+
+        const $ = id => document.getElementById(id);
+        const toasts = $('toasts');
+        const loginPanel = $('loginPanel'), regPanel = $('regPanel');
+        const cardTitle = $('cardTitle'), cardSub = $('cardSubtitle');
+
+        // 邮箱转 Firebase 安全 key（将 . 替换为 ,）
+        function encEmail(e) { return e.replace(/\./g, ','); }
+
+        // 简单邮箱格式验证
+        function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+
+        // ========== 面板切换 ==========
+        function switchTo(panel) {
+            const hide = panel === 'reg' ? loginPanel : regPanel;
+            const show = panel === 'reg' ? regPanel : loginPanel;
+            hide.classList.remove('active');
+            hide.classList.add('exiting');
+            setTimeout(() => { hide.classList.remove('exiting'); show.classList.add('active'); }, 250);
+            cardTitle.textContent = panel === 'reg' ? 'Create Account' : 'ExpenseTracker';
+            cardSub.textContent = panel === 'reg' ? 'Set up your profile to get started' : 'Sign in to manage your finances';
+        }
+        $('showReg').addEventListener('click', () => switchTo('reg'));
+        $('showLogin').addEventListener('click', () => switchTo('login'));
+
+        // ========== 密码显隐 ==========
+        document.querySelectorAll('.toggle-pw').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const inp = $(btn.dataset.target);
+                const show = inp.type === 'password';
+                inp.type = show ? 'text' : 'password';
+                btn.querySelector('i').className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+            });
+        });
+
+// ========== Logout Script ==========
+function logoutUser() {
+    // 1. Remove the user's session from localStorage
+    localStorage.removeItem('userEmail');
+    
+    // 2. Redirect the user back to the login page
+    // Change 'login.html' if your file has a different name
+    window.location.href = 'login.html'; 
+}
+
+// Example: Attach this to your logout button click event
+// Assumes your HTML has a button with id="logoutBtn"
+document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    logoutUser();
+});
+
+        // ========== 密码强度 ==========
+        const rPw = $('rPw'), bars = [$('pb1'), $('pb2'), $('pb3'), $('pb4')], pwHint = $('pwHint');
+        rPw.addEventListener('input', () => {
+            const v = rPw.value;
+            let s = 0;
+            if (v.length >= 4) s++;
+            if (v.length >= 8) s++;
+            if (/[A-Z]/.test(v) && /[a-z]/.test(v)) s++;
+            if (/[0-9]/.test(v) && /[^A-Za-z0-9]/.test(v)) s++;
+            const labels = ['', 'Weak — add more characters', 'Fair — try adding symbols', 'Good — almost there', 'Strong password'];
+            const cls = ['', 'weak', 'medium', 'medium', 'strong'];
+            bars.forEach((b, i) => { b.className = 'pw-bar'; if (i < s) b.classList.add(cls[s]); });
+            pwHint.className = 'pw-hint';
+            if (v.length > 0) { pwHint.textContent = labels[s]; pwHint.classList.add(cls[s]); }
+            else pwHint.textContent = '';
+        });
+
+        // ========== Toast ==========
+        function toast(msg, type = 'ok') {
+            const el = document.createElement('div');
+            el.className = `ct ${type}`;
+            el.innerHTML = `<i class="ti bi ${type === 'ok' ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill'}"></i><span class="tm">${msg}</span>`;
+            toasts.appendChild(el);
+            setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 300); }, 3500);
+        }
+
+        // ========== 涟漪 ==========
+        document.addEventListener('mousedown', e => {
+            const btn = e.target.closest('.btn-accent');
+            if (!btn) return;
+            const r = btn.getBoundingClientRect(), s = Math.max(r.width, r.height), sp = document.createElement('span');
+            sp.className = 'ripple';
+            sp.style.width = sp.style.height = s + 'px';
+            sp.style.left = (e.clientX - r.left - s / 2) + 'px';
+            sp.style.top = (e.clientY - r.top - s / 2) + 'px';
+            btn.appendChild(sp);
+            setTimeout(() => sp.remove(), 600);
+        });
+
+        // ========== 加载状态 ==========
+        function loading(btn, on) {
+            if (on) { btn.disabled = true; btn.dataset.orig = btn.innerHTML; btn.innerHTML = '<span class="spin-sm"></span>'; }
+            else { btn.disabled = false; btn.innerHTML = btn.dataset.orig; }
+        }
+
+        // ========== 成功动画 ==========
+        function showSuccess(title, msg) {
+            $('successTitle').textContent = title;
+            $('successMsg').textContent = msg;
+            $('successOverlay').classList.add('show');
+        }
+
+        // ========== 登录 ==========
+        $('loginForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const email = $('lEmail').value.trim().toLowerCase();
+            const pw = $('lPw').value;
+            if (!email) { toast('Please enter your email.', 'err'); $('lEmail').focus(); return; }
+            if (!isValidEmail(email)) { toast('Please enter a valid email address.', 'err'); $('lEmail').focus(); return; }
+            if (!pw) { toast('Please enter your password.', 'err'); $('lPw').focus(); return; }
+
+            loading($('loginBtn'), true);
+            try {
+                const snap = await get(ref(db, `users/${encEmail(email)}`));
+                if (!snap.exists()) { toast('Account not found. Please create one first.', 'err'); loading($('loginBtn'), false); return; }
+                if (snap.val().password !== pw) { toast('Incorrect password.', 'err'); loading($('loginBtn'), false); return; }
+                localStorage.setItem('userEmail', email);
+                showSuccess('Welcome Back!', 'Redirecting to your dashboard...');
+                setTimeout(() => window.location.href = 'expense.html', 1400);
+            } catch (err) { toast('Connection error. Please try again.', 'err'); loading($('loginBtn'), false); console.error(err); }
+        });
+
+        // ========== 注册 ==========
+        $('regForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const email = $('rEmail').value.trim().toLowerCase();
+            const pw = $('rPw').value, pwC = $('rPwC').value;
+            if (!email) { toast('Please enter your email.', 'err'); $('rEmail').focus(); return; }
+            if (!isValidEmail(email)) { toast('Please enter a valid email address.', 'err'); $('rEmail').focus(); return; }
+            if (!pw) { toast('Please create a password.', 'err'); $('rPw').focus(); return; }
+            if (pw.length < 4) { toast('Password must be at least 4 characters.', 'err'); $('rPw').focus(); return; }
+            if (pw !== pwC) { toast('Passwords do not match.', 'err'); $('rPwC').focus(); return; }
+
+            loading($('regBtn'), true);
+            try {
+                const key = encEmail(email);
+                const snap = await get(ref(db, `users/${key}`));
+                if (snap.exists()) { toast('This email is already registered. Please sign in.', 'err'); loading($('regBtn'), false); return; }
+                await set(ref(db, `users/${key}`), { password: pw, email: email, createdAt: Date.now() });
+                await set(ref(db, `expenses/${key}`), { monthlyIncome: {}, transactions: {} });
+                localStorage.setItem('userEmail', email);
+                showSuccess('Account Created!', 'Setting up your dashboard...');
+                setTimeout(() => window.location.href = 'expense.html', 1400);
+            } catch (err) { toast('Connection error. Please try again.', 'err'); loading($('regBtn'), false); console.error(err); }
+        });
+    </script>
+</body>
+</html>
